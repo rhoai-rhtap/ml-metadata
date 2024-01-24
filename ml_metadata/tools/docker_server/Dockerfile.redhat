@@ -1,21 +1,6 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# TODO(b/195701120) Introduces l.gcr.io/google/bazel:5.3.0 when it is available
-# and makes sure that it uses ubuntu 20.04 as base image. Currently the lastest
-# version only supports bazel 3.5.0.
 FROM registry.access.redhat.com/ubi9/ubi:latest as builder
+
+USER root
 
 RUN dnf update -y -q && \
   dnf install -y -q \
@@ -25,9 +10,7 @@ RUN dnf update -y -q && \
   clang \
   cmake \
   make \
-  # musl-devel \
   openssl \
-  # curl \
   ca-certificates \
   unzip \
   git \
@@ -47,16 +30,21 @@ RUN mkdir /bazel && \
     cd / && \
     rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 
-ADD . /mlmd-src
+
+COPY . /mlmd-src
 WORKDIR /mlmd-src
 
+
+# Fetch the bazel cache and deps into local root bazel cache
+# RUN cp -R /mlmd-src/_bazel_root/* $(bazel info output_base)/..
+
+# Running in offline mode with --nofetch arg, cache and deps must be cloned 
+# into the local root bazel cache
 # "-std=c++17" is needed in order to build with ZetaSQL.
 RUN bazel build -c opt --action_env=PATH \
   --define=grpc_no_ares=true \
   //ml_metadata/metadata_store:metadata_store_server \
-  --cxxopt="-std=c++17" --host_cxxopt="-std=c++17" 
-  # --repository_cache /mlmd-src/mlmd-cache \
-  # --registry /mlmd-src/bcr
+  --cxxopt="-std=c++17" --host_cxxopt="-std=c++17"
 
 # copying libmysqlclient source onto THIRD_PARTY folder.
 RUN mkdir -p /mlmd-src/third_party
