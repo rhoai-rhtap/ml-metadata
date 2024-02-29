@@ -8,7 +8,7 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
-      == "master"
+      == "master" && ".tekton/*-pull-request.yaml".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ml-metadata
@@ -17,6 +17,17 @@ metadata:
   name: ml-metadata-on-pull-request
   namespace: rhoai-tenant
 spec:
+  taskRunTemplate:
+    podTemplate:
+      nodeSelector:
+        pipeline-type: build
+      tolerations:
+        - key: pipeline-type
+          operator: Equal
+          value: build
+          effect: NoSchedule
+  timeouts:
+    pipeline: "8h"
   params:
   - name: dockerfile
     value: ./ml_metadata/tools/docker_server/Dockerfile.redhat
@@ -218,12 +229,13 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-10gb
+          value: buildah-24gb
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-10gb:0.1
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-24gb@sha256:72c4f3d797eaaf6b350c8b1a4ff0b1503222370ad9d7e9ff1304e8c258c60f8c
         - name: kind
           value: task
         resolver: bundles
+      timeout: 6h
       when:
       - input: $(tasks.init.results.build)
         operator: in
@@ -371,7 +383,6 @@ spec:
     - name: workspace
     - name: git-auth
       optional: true
-  taskRunTemplate: {}
   workspaces:
   - name: workspace
     volumeClaimTemplate:
