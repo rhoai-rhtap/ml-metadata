@@ -16,6 +16,8 @@ metadata:
   name: ml-metadata-poc-on-push
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    pipeline: "3h"
   params:
   - name: git-url
     value: '{{source_url}}'
@@ -241,6 +243,7 @@ spec:
         - name: kind
           value: task
         resolver: bundles
+      timeout: "0"
       when:
       - input: $(tasks.init.results.build)
         operator: in
