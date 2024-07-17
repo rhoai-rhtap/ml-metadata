@@ -37,6 +37,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 # Set up Bazel 5.3.0
 ENV BAZEL_VERSION 5.3.0
+ENV BAZEL_OPTS="--host_jvm_args=-Xmx2g"
 WORKDIR /
 RUN mkdir /bazel && \
     cd /bazel && \
@@ -50,10 +51,13 @@ RUN mkdir /bazel && \
 ADD . /mlmd-src
 WORKDIR /mlmd-src
 
+RUN bazel clean --expunge
+
 # "-std=c++17" is needed in order to build with ZetaSQL.
 RUN bazel build -c opt --action_env=PATH \
   --define=grpc_no_ares=true \
   //ml_metadata/metadata_store:metadata_store_server --cxxopt="-std=c++17"
+  --verbose_failures --sandbox_debug
 
 # copying libmysqlclient source onto THIRD_PARTY folder.
 RUN mkdir -p /mlmd-src/third_party
