@@ -37,7 +37,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 # Set up Bazel 5.3.0
 ENV BAZEL_VERSION 5.3.0
-ENV BAZEL_OPTS="--host_jvm_args=-Xmx2g"
+ENV BAZEL_OPTS="--host_jvm_args=-Xmx4g"
+
 WORKDIR /
 RUN mkdir /bazel && \
     cd /bazel && \
@@ -47,11 +48,12 @@ RUN mkdir /bazel && \
     ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
     cd / && \
     rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
+    
+RUN useradd -m bazeluser
+USER bazeluser
 
 ADD . /mlmd-src
 WORKDIR /mlmd-src
-
-RUN bazel clean --expunge
 
 # "-std=c++17" is needed in order to build with ZetaSQL.
 RUN bazel build -c opt --action_env=PATH \
