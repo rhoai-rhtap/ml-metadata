@@ -17,8 +17,8 @@ metadata:
   name: ml-metadata-bazel-on-pull-request
   namespace: rhoai-tenant
 spec:
- timeouts:
-   pipeline: 4h
+  timeouts:
+    pipeline: 4h
   params:
   - name: git-url
     value: '{{source_url}}'
