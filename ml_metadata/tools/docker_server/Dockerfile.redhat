@@ -1,4 +1,7 @@
-FROM registry.access.redhat.com/ubi8/ubi:8.9 as builder
+#FROM registry.access.redhat.com/ubi8/ubi:8.9 as builder
+
+# Use the provided builder image for Bazel tasks
+FROM quay.io/bcook/bazel:5.4.0 as builder
 
 USER root
 
