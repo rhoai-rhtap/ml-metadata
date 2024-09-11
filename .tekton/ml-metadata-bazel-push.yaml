@@ -16,7 +16,7 @@ metadata:
   name: ml-metadata-bazel-on-push
   namespace: rhoai-tenant
 spec:
- timeouts:
+  timeouts:
     pipeline: 4h
   params:
   - name: git-url
