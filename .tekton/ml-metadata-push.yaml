@@ -218,7 +218,7 @@ spec:
         - name: name
           value: buildah-10gb
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-10gb:0.1
+          value: quay.io/bcook/bazel:5.4.0
         - name: kind
           value: task
         resolver: bundles
