@@ -39,8 +39,8 @@ RUN cp -RL /mlmd-src/bazel-mlmd-src/external/libmysqlclient /mlmd-src/third_part
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9
 
-COPY --from=builder /mlmd-src/bazel-bin/ml_metadata/metadata_store/metadata_store_server /bin/metadata_store_server
-COPY --from=builder /mlmd-src/third_party /mlmd-src/third_party
+COPY --from=bazel /mlmd-src/bazel-bin/ml_metadata/metadata_store/metadata_store_server /bin/metadata_store_server
+COPY --from=bazel /mlmd-src/third_party /mlmd-src/third_party
 
 ENV GRPC_PORT "8080"
 ENV METADATA_STORE_SERVER_CONFIG_FILE ""
