@@ -1,6 +1,22 @@
 FROM quay.io/bcook/bazel:5.4.0 as bazel
 #FROM registry.access.redhat.com/ubi8/ubi:8.9 as builder
 
+#RUN dnf update -y -q && \
+  #dnf install -y -q \
+  #which \
+  #patch \
+  #gcc \
+  #clang \
+  #cmake \
+  #make \
+  #openssl \
+  #ca-certificates \
+  #unzip \
+  #git \
+  #findutils \
+  #python3
+
+
 USER root
 
 # Set up Bazel 5.3.0
