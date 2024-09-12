@@ -3,21 +3,6 @@ FROM quay.io/bcook/bazel:5.4.0 as bazel
 
 USER root
 
-RUN dnf update -y -q && \
-  dnf install -y -q \
-  which \
-  patch \
-  gcc \
-  clang \
-  cmake \
-  make \
-  openssl \
-  ca-certificates \
-  unzip \
-  git \
-  findutils \
-  python3
-
 # Set up Bazel 5.3.0
 ENV BAZEL_VERSION 5.3.0
 WORKDIR /
