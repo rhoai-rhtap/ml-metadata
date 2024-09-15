@@ -22,7 +22,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rhoai-tenant/rhoai-v2-13/odh-mlmd-grpc-server-v2-13:{{revision}}
+    value: quay.io/rhoai/odh-mlmd-grpc-server-rhel8:{{revision}}
   - name: dockerfile
     value: ml_metadata/tools/docker_server/Dockerfile.redhat
   - name: path-context
