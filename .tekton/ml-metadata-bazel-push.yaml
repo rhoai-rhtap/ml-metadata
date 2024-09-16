@@ -235,9 +235,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah
+          value: buildah-10gb
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.2@sha256:a523f60203d90e149f96ec776b47ce85a7acfd6d634ddfc18f4a03f14e08ea0e
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-10gb:0.1.
         - name: kind
           value: task
         resolver: bundles
