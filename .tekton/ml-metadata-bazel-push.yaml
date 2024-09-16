@@ -235,9 +235,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-remote
+          value: buildah-10gb
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote:0.1@sha256:04e44f7b59d04e99c39851495fcfd288c28127951851c8adcd1dc30617b78e23
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-10gb:0.1 .
         - name: kind
           value: task
         resolver: bundles
