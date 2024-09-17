@@ -1,7 +1,8 @@
 #FROM registry.access.redhat.com/ubi8/ubi:latest as builder
 #FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
+#FROM quay.io/bcook/bazel:5.4.0-ubi8 as builder
 
-FROM quay.io/bcook/bazel:5.4.0-ubi8 as builder
+FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
 
 
 USER root
