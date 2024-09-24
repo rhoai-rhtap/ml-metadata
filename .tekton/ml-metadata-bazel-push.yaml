@@ -240,11 +240,6 @@ spec:
           value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-24gb:0.1
         - name: kind
           value: task
-        - name: script
-          value: |
-            #!/bin/sh
-            ip link set dev lo up && \
-            buildah build -f ml_metadata/tools/docker_server/Dockerfile.redhat ./
         resolver: bundles
       when:
       - input: $(tasks.init.results.build)
