@@ -16,6 +16,8 @@ metadata:
   name: ml-metadata-oci-on-push
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    pipelines: 4h
   params:
   - name: git-url
     value: '{{source_url}}'
