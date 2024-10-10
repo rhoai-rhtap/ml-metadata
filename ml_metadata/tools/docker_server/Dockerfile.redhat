@@ -2,8 +2,8 @@
 #FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
 #FROM quay.io/bcook/bazel:5.4.0-ubi8 as builder
 
-FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
 
+FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
 
 USER root
 
@@ -43,13 +43,14 @@ WORKDIR /mlmd-src
 RUN bazel build -c opt --action_env=PATH \
   --define=grpc_no_ares=true \
   //ml_metadata/metadata_store:metadata_store_server \
-  --cxxopt="-std=c++17" --host_cxxopt="-std=c++17"
+  --cxxopt="-std=c++17" --host_cxxopt="-std=c++17" \
+  --nofetch --verbose_failures
 
 # copying libmysqlclient source onto THIRD_PARTY folder.
 RUN mkdir -p /mlmd-src/third_party
 RUN cp -RL /mlmd-src/bazel-mlmd-src/external/libmysqlclient /mlmd-src/third_party/mariadb-connector-c
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+FROM registry.redhat.io/ubi8/ubi-minimal:latest
 
 COPY --from=builder /mlmd-src/bazel-bin/ml_metadata/metadata_store/metadata_store_server /bin/metadata_store_server
 COPY --from=builder /mlmd-src/third_party /mlmd-src/third_party
@@ -61,6 +62,14 @@ ENV METADATA_STORE_SERVER_CONFIG_FILE ""
 RUN microdnf update -y && \
   microdnf reinstall -y \
   tzdata
+
+EXPOSE ${GRPC_PORT}
+
+CMD \
+  "/bin/metadata_store_server" \
+  "--grpc_port=${GRPC_PORT}" \
+  "--metadata_store_server_config_file=${METADATA_STORE_SERVER_CONFIG_FILE}"
+
 
 ENTRYPOINT \
   "/bin/metadata_store_server" \
