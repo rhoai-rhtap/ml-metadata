@@ -54,15 +54,3 @@ CMD \
   "/bin/metadata_store_server" \
   "--grpc_port=${GRPC_PORT}" \
   "--metadata_store_server_config_file=${METADATA_STORE_SERVER_CONFIG_FILE}"
-
-
-LABEL com.redhat.component="odh-mlmd-grpc-server-container" \
-      name="managed-open-data-hub/odh-mlmd-grpc-server-container-rhel8" \
-      description="Sidecar container for recording and retrieving metadata associated with ML developer and data scientist workflows" \
-      summary="odh-mlmd-grpc-server" \
-      maintainer="['managed-open-data-hub@redhat.com']" \
-      io.openshift.expose-services="" \
-      io.k8s.display-name="odh-mlmd-grpc-server" \
-      io.openshift.tags="odh-mlmd-grpc-server" \
-      io.k8s.description="odh-mlmd-grpc-server" \
-      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"
