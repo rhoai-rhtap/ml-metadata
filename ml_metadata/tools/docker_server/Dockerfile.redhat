@@ -1,14 +1,10 @@
-#FROM registry.access.redhat.com/ubi8/ubi:latest as builder
 #FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
-#FROM quay.io/bcook/bazel:5.4.0-ubi8 as builder
 
-
-FROM quay.io/bcook/bazel:ubi8-bazel-5 as builder
+FROM quay.io/konflux-ci/bazel5-ubi8@sha256:073077dd02506ee51aab7f823f9ce24e39a097673c6d08b3538e21263a418432 as builder
 
 USER root
 
-RUN dnf update -y -q && \
-  dnf install -y -q \
+RUN dnf install -y --skip-broken \
   which \
   patch \
   gcc \
@@ -22,17 +18,6 @@ RUN dnf update -y -q && \
   findutils \
   python3
 
-# Set up Bazel 5.3.0
-#ENV BAZEL_VERSION 5.3.0
-#WORKDIR /
-#RUN mkdir /bazel && \
-#    cd /bazel && \
-#    curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36" -fSsL -O https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
-#    curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36" -fSsL -o /bazel/LICENSE.txt https://raw.githubusercontent.com/bazelbuild/bazel/master/LICENSE && \
-#    chmod +x bazel-*.sh && \
-#    ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
-#    cd / && \
-#    rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 
 COPY . /mlmd-src
 WORKDIR /mlmd-src
@@ -51,7 +36,7 @@ RUN bazel build -c opt --action_env=PATH \
 RUN mkdir -p /mlmd-src/third_party
 RUN cp -RL /mlmd-src/bazel-mlmd-src/external/libmysqlclient /mlmd-src/third_party/mariadb-connector-c
 
-FROM registry.redhat.io/ubi8/ubi-minimal:latest
+FROM registry.redhat.io/ubi8/ubi-minimal@sha256:c12e67af6a7e15113d76bc72f10bef2045c026c71ec8b7124c8a075458188a83
 
 COPY --from=builder /mlmd-src/bazel-bin/ml_metadata/metadata_store/metadata_store_server /bin/metadata_store_server
 COPY --from=builder /mlmd-src/third_party /mlmd-src/third_party
@@ -60,8 +45,7 @@ ENV GRPC_PORT "8080"
 ENV METADATA_STORE_SERVER_CONFIG_FILE ""
 
 # Introduces tzdata package here to avoid LoadTimeZone check failed error in the metadata store server.
-RUN microdnf update -y && \
-  microdnf reinstall -y \
+RUN microdnf install -y \
   tzdata
 
 EXPOSE ${GRPC_PORT}
@@ -72,7 +56,13 @@ CMD \
   "--metadata_store_server_config_file=${METADATA_STORE_SERVER_CONFIG_FILE}"
 
 
-#ENTRYPOINT \
- # "/bin/metadata_store_server" \
- # "--grpc_port=${GRPC_PORT}" \
- # "--metadata_store_server_config_file=${METADATA_STORE_SERVER_CONFIG_FILE}"
+LABEL com.redhat.component="odh-mlmd-grpc-server-container" \
+      name="managed-open-data-hub/odh-mlmd-grpc-server-container-rhel8" \
+      description="Sidecar container for recording and retrieving metadata associated with ML developer and data scientist workflows" \
+      summary="odh-mlmd-grpc-server" \
+      maintainer="['managed-open-data-hub@redhat.com']" \
+      io.openshift.expose-services="" \
+      io.k8s.display-name="odh-mlmd-grpc-server" \
+      io.openshift.tags="odh-mlmd-grpc-server" \
+      io.k8s.description="odh-mlmd-grpc-server" \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"
