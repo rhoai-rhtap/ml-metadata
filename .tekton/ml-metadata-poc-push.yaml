@@ -16,8 +16,6 @@ metadata:
   name: ml-metadata-poc-on-push
   namespace: rhoai-tenant
 spec:
-  timeouts:
-    pipeline: "3h"
   params:
   - name: git-url
     value: '{{source_url}}'
@@ -243,7 +241,7 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      timeout: "0"
+      timeout: 0s
       when:
       - input: $(tasks.init.results.build)
         operator: in
@@ -461,7 +459,10 @@ spec:
       optional: true
     - name: netrc
       optional: true
-  taskRunTemplate: {}
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-ml-metadata-poc
+  timeouts:
+    pipeline: 3h0m0s
   workspaces:
   - name: workspace
     volumeClaimTemplate:
